@@ -127,7 +127,12 @@ func testRequest(domain string) bool {
 }
 
 func randomString() string {
-	rand.Seed(time.Now().Unix())
+	maxRequestID := big.NewInt(65536)
+	newid, _ := crand.Int(crand.Reader, maxRequestID)
+	seed := uint16(newid.Int64())
+
+	rand.Seed(seed)
+
 	charSet := []rune("abcdedfghijklmnopqrstuvwxyz")
 	var output strings.Builder
 	length := 10
@@ -173,7 +178,7 @@ func linearResolver(threadID int, domain string, sentCounterCh chan<- statsMessa
 				randomDomain := randomString() + "." + domain
 				message.SetQuestion(randomDomain, dns.TypeA)
 				if verbose {
-					fmt.Printf("Changing domain to #%s.\n", randomDomain)
+					fmt.Printf("Changing domain to %s.\n", randomDomain)
 				}
 			}
 			if flood {
