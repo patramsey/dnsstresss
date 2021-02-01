@@ -1,7 +1,7 @@
 package main
 
 import (
-	"crypto/rand"
+	crand "crypto/rand"
 	"flag"
 	"fmt"
 	"math/big"
@@ -165,7 +165,7 @@ func linearResolver(threadID int, domain string, sentCounterCh chan<- statsMessa
 			// Try to resolve the domain
 			if randomIds {
 				// Regenerate message Id to avoid servers dropping (seemingly) duplicate messages
-				newid, _ := rand.Int(rand.Reader, maxRequestID)
+				newid, _ := crand.Int(crand.Reader, maxRequestID)
 				message.Id = uint16(newid.Int64())
 			}
 
