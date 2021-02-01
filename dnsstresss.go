@@ -22,6 +22,7 @@ var (
 	iterative       bool
 	resolver        string
 	randomIds       bool
+	randomSubDomain bool
 	flood           bool
 )
 
@@ -34,6 +35,8 @@ func init() {
 		"Verbose logging")
 	flag.BoolVar(&randomIds, "random", false,
 		"Use random Request Identifiers for each query")
+	flag.BoolVar(&randomSubDomain, "randomsub", false,
+		"Use random sub domains for each query")
 	flag.BoolVar(&iterative, "i", false,
 		"Do an iterative query instead of recursive (to stress authoritative nameservers)")
 	flag.StringVar(&resolver, "r", "127.0.0.1:53",
@@ -122,6 +125,20 @@ func testRequest(domain string) bool {
 	return false
 }
 
+func randomString(int n) string {
+	rand.Seed(time.Now().Unix())
+	charSet := []rune("abcdedfghijklmnopqrstuvwxyz")
+	var output strings.Builder
+	length := 10
+	for i := 0; i < length; i++ {
+		random := rand.Intn(len(charSet))
+		randomChar := charSet[random]
+		output.WriteRune(randomChar)
+	}
+	return output.String()
+
+}
+
 func linearResolver(threadID int, domain string, sentCounterCh chan<- statsMessage) {
 	// Resolve the domain as fast as possible
 	if verbose {
@@ -150,7 +167,13 @@ func linearResolver(threadID int, domain string, sentCounterCh chan<- statsMessa
 				newid, _ := rand.Int(rand.Reader, maxRequestID)
 				message.Id = uint16(newid.Int64())
 			}
-
+			if randomSubDomain {
+				randomDomain := randomString + "." domain
+				message.SetQuestion(randomDomain, dns.TypeA)
+				if verbose {
+					fmt.Printf("Changing domain to #%s.\n", randomDomain)
+				}
+			}
 			if flood {
 				go dnsExchange(resolver, message)
 			} else {
