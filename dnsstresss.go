@@ -167,8 +167,9 @@ func linearResolver(threadID int, domain string, sentCounterCh chan<- statsMessa
 				newid, _ := rand.Int(rand.Reader, maxRequestID)
 				message.Id = uint16(newid.Int64())
 			}
+
 			if randomSubDomain {
-				randomDomain := randomString + "." domain
+				randomDomain := randomString + "." + domain
 				message.SetQuestion(randomDomain, dns.TypeA)
 				if verbose {
 					fmt.Printf("Changing domain to #%s.\n", randomDomain)
