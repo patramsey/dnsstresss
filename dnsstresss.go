@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"math/big"
+	"math/rand"
 	"net"
 	"os"
 	"strings"
@@ -125,7 +126,7 @@ func testRequest(domain string) bool {
 	return false
 }
 
-func randomString(int n) string {
+func randomString() string {
 	rand.Seed(time.Now().Unix())
 	charSet := []rune("abcdedfghijklmnopqrstuvwxyz")
 	var output strings.Builder
