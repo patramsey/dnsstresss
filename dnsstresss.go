@@ -129,7 +129,7 @@ func testRequest(domain string) bool {
 func randomString() string {
 	maxRequestID := big.NewInt(65536)
 	newid, _ := crand.Int(crand.Reader, maxRequestID)
-	seed := uint16(newid.Int64())
+	seed := newid.Int64()
 
 	rand.Seed(seed)
 
